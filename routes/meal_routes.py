@@ -26,7 +26,8 @@ def get_meals():
             "fat": m.fat,
             "note": m.note,
             "audio_url": m.audio_url
-        } for m in meals
+        }
+        for m in meals
     ]), 200
 
 
@@ -42,7 +43,7 @@ def log_meal():
         timestamp_str = data.get("timestamp")
         if timestamp_str:
             try:
-                # Remove trailing 'Z' if present, because fromisoformat() does not accept it
+                # Remove trailing 'Z' if present (fromisoformat() doesn't support it)
                 if timestamp_str.endswith("Z"):
                     timestamp_str = timestamp_str[:-1]
                 timestamp = datetime.fromisoformat(timestamp_str)
@@ -51,10 +52,11 @@ def log_meal():
         else:
             timestamp = datetime.utcnow()
 
+        # Create a new Meal entry
         new_meal = Meal(
-            name=data["name"],
-            category=data["category"],
-            calories=data["calories"],
+            name=data.get("name"),
+            category=data.get("category"),
+            calories=data.get("calories"),
             quantity=data.get("quantity", 1),
             carbs=data.get("carbs"),
             protein=data.get("protein"),
