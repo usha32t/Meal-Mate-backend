@@ -3,9 +3,8 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from models import Meal
 from extensions import db
 from datetime import datetime
-from dateutil import parser  # Make sure it's installed: pip install python-dateutil
 
-meal_bp = Blueprint("meals", __name__)
+meal_bp = Blueprint("meals", __name__, url_prefix="/api/meals")
 
 # ✅ Get all meals for the logged-in user
 @meal_bp.route("", methods=["GET"])
@@ -39,7 +38,18 @@ def log_meal():
     data = request.get_json()
 
     try:
-        timestamp = parser.isoparse(data["timestamp"]) if "timestamp" in data else datetime.utcnow()
+        # Parse timestamp if provided; otherwise use current UTC time
+        timestamp_str = data.get("timestamp")
+        if timestamp_str:
+            try:
+                # Remove trailing 'Z' if present, because fromisoformat() does not accept it
+                if timestamp_str.endswith("Z"):
+                    timestamp_str = timestamp_str[:-1]
+                timestamp = datetime.fromisoformat(timestamp_str)
+            except ValueError:
+                timestamp = datetime.utcnow()
+        else:
+            timestamp = datetime.utcnow()
 
         new_meal = Meal(
             name=data["name"],
