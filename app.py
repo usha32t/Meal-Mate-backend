@@ -37,11 +37,9 @@ def create_app():
 
 # Create the Flask app instance
 app = create_app()
-if __name__ == "__main__":
-    import os
+import os
 
-    # Railway dynamically assigns a port each time the app starts
+if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
-    
-    # Run the app on the correct port and host
-    app.run(host="0.0.0.0", port=port)
+    # Important: disable debug for production and avoid extra restarts
+    app.run(host="0.0.0.0", port=port, debug=False)
