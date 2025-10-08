@@ -33,13 +33,19 @@ def create_app():
     app.register_blueprint(audio_bp, url_prefix="/audio")
     app.register_blueprint(ai_bp, url_prefix="/ai")  # AI suggestions under /ai/suggestions
 
+    # Quick test route to verify deployment
+    @app.route("/")
+    def home():
+        return "MealMate backend is running successfully 🚀"
+
     return app
 
 # Create the Flask app instance
 app = create_app()
-import os
 
 if __name__ == "__main__":
+    import os
+    # Use Railway assigned port or fallback to 5000 locally
     port = int(os.environ.get("PORT", 5000))
-    # Important: disable debug for production and avoid extra restarts
-    app.run(host="0.0.0.0", port=port, debug=False)
+    # Disable debug and reloader for Railway production deployment
+    app.run(host="0.0.0.0", port=port, debug=False, use_reloader=False)
